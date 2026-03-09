@@ -172,9 +172,9 @@ def main():
         "LooksMaxGPT": ("peft", args.antiexpert_dir),
         "Target (triplet)": ("peft", args.target_dir),
     }
-    if args.target_dpo_dir and os.path.isdir(args.target_dpo_dir):
+    if args.target_dpo_dir and os.path.isfile(os.path.join(args.target_dpo_dir, "adapter_config.json")):
         models_to_eval["Target (DPO)"] = ("peft", args.target_dpo_dir)
-    if args.target_infonce_dir and os.path.isdir(args.target_infonce_dir):
+    if args.target_infonce_dir and os.path.isfile(os.path.join(args.target_infonce_dir, "adapter_config.json")):
         models_to_eval["Target (InfoNCE+UL)"] = ("peft", args.target_infonce_dir)
 
     results = defaultdict(dict)
