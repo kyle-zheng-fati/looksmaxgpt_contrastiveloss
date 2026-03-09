@@ -29,12 +29,27 @@ def load_config(path):
         return yaml.safe_load(f)
 
 
+def last_token_pool(hidden_states, attention_mask):
+    """Last non-padding token representation for decoder-only models.
+
+    With left-padding (padding_side='left'), the last position (index -1) is
+    always the last real content token regardless of padding amount.
+    """
+    return hidden_states[:, -1, :]
+
+
 def mean_pool(hidden_states, attention_mask):
     """Mean pool over non-padding tokens."""
     mask = attention_mask.unsqueeze(-1).float()
     summed = (hidden_states * mask).sum(dim=1)
     counts = mask.sum(dim=1).clamp(min=1e-9)
     return summed / counts
+
+
+def pool(hidden_states, attention_mask, method="last"):
+    if method == "last":
+        return last_token_pool(hidden_states, attention_mask)
+    return mean_pool(hidden_states, attention_mask)
 
 
 def cosine_dist(u, v):
@@ -48,6 +63,55 @@ def triplet_loss(z_a, z_pos, z_neg, margin):
     return loss.mean()
 
 
+def infonce_loss(z_a, z_pos, z_neg, temperature=0.07):
+    """InfoNCE loss using in-batch negatives + the explicit negative.
+
+    For each anchor, positive similarity should be higher than all other
+    in-batch positives and the explicit negative. Uses all N-1 in-batch
+    negatives plus the explicit hard negative as the denominator.
+    """
+    batch_size = z_a.size(0)
+    # Compute cosine similarity matrix: anchor vs all positives [B, B]
+    z_a_norm = F.normalize(z_a, dim=-1)
+    z_pos_norm = F.normalize(z_pos, dim=-1)
+    z_neg_norm = F.normalize(z_neg, dim=-1)
+
+    # Similarity of each anchor to all positives in batch
+    sim_matrix = torch.matmul(z_a_norm, z_pos_norm.T) / temperature  # [B, B]
+    # Similarity of each anchor to its explicit hard negative
+    sim_neg = (z_a_norm * z_neg_norm).sum(dim=-1, keepdim=True) / temperature  # [B, 1]
+
+    # Concatenate: [B, B+1] where column B is the explicit negative
+    logits = torch.cat([sim_matrix, sim_neg], dim=1)
+    # Labels: diagonal (index i) is the positive for anchor i
+    labels = torch.arange(batch_size, device=z_a.device)
+    return F.cross_entropy(logits, labels)
+
+
+def unlikelihood_loss(logits, input_ids, attention_mask):
+    """Unlikelihood loss on negative sequences.
+
+    Penalizes the model for assigning high probability to tokens in toxic
+    (negative) responses. Operates at token level, complementing the triplet
+    contrastive objective in embedding space.
+
+    L_UL = -mean(log(1 - p(token_i)))  for non-padding tokens
+    """
+    # Shift: predict token[i+1] given token[i]
+    shift_logits = logits[:, :-1, :].contiguous()
+    shift_ids = input_ids[:, 1:].contiguous()
+    shift_mask = attention_mask[:, 1:].contiguous()
+
+    probs = F.softmax(shift_logits, dim=-1)
+    # Gather probabilities of the actual negative tokens
+    token_probs = probs.gather(dim=-1, index=shift_ids.unsqueeze(-1)).squeeze(-1)  # [B, L-1]
+    # Unlikelihood: minimize log(1 - p(token))
+    ul = -torch.log(1.0 - token_probs.clamp(max=1.0 - 1e-6))
+    # Only over non-padding tokens
+    ul = (ul * shift_mask).sum() / shift_mask.sum().clamp(min=1e-9)
+    return ul
+
+
 class TripletDataset(Dataset):
     def __init__(self, path):
         self.samples = []
@@ -57,7 +121,8 @@ class TripletDataset(Dataset):
                 if not line:
                     continue
                 s = json.loads(line)
-                assert s.get("negative"), f"Empty negative found in {path}. Run generate_negatives.py first."
+                if not s.get("negative"):
+                    continue  # skip samples with empty negatives
                 self.samples.append(s)
 
     def __len__(self):
@@ -83,18 +148,21 @@ def collate_fn(batch, tokenizer, max_length):
     return anchors, positives, negatives
 
 
-def encode_batch(model, batch, device):
+def encode_batch(model, batch, device, pool_method="last"):
     input_ids = batch["input_ids"].to(device)
     attention_mask = batch["attention_mask"].to(device)
     outputs = model(input_ids=input_ids, attention_mask=attention_mask, output_hidden_states=True)
-    z = mean_pool(outputs.hidden_states[-1], attention_mask)
-    return z, outputs.logits, input_ids
+    z = pool(outputs.hidden_states[-1], attention_mask, method=pool_method).float()
+    return z, outputs.logits.float(), input_ids, attention_mask
 
 
-def compute_lm_loss(logits, input_ids):
-    """Causal LM loss: shift by 1."""
+def compute_lm_loss(logits, input_ids, attention_mask):
+    """Causal LM loss: shift by 1, masking padding positions."""
     shift_logits = logits[:, :-1, :].contiguous()
     shift_labels = input_ids[:, 1:].contiguous()
+    shift_mask = attention_mask[:, 1:].contiguous()
+    # Mask out padding tokens so they don't contribute to the loss
+    shift_labels = shift_labels.masked_fill(shift_mask == 0, -100)
     return F.cross_entropy(
         shift_logits.view(-1, shift_logits.size(-1)),
         shift_labels.view(-1),
@@ -106,15 +174,27 @@ def run_epoch(model, loader, optimizer, scheduler, cfg, device, training=True):
     model.train(training)
     total_loss = total_triplet = total_lm = 0
     steps = 0
+    pool_method = cfg.get("pool_method", "last")
+
+    loss_type = cfg.get("loss_type", "triplet")
+    ul_weight = cfg.get("unlikelihood_weight", 0.0)
 
     for anchors, positives, negatives in tqdm(loader, leave=False):
-        z_a, _, _ = encode_batch(model, anchors, device)
-        z_pos, logits_pos, ids_pos = encode_batch(model, positives, device)
-        z_neg, _, _ = encode_batch(model, negatives, device)
+        z_a, _, _, _ = encode_batch(model, anchors, device, pool_method)
+        z_pos, logits_pos, ids_pos, mask_pos = encode_batch(model, positives, device, pool_method)
+        z_neg, logits_neg, ids_neg, mask_neg = encode_batch(model, negatives, device, pool_method)
 
-        l_triplet = triplet_loss(z_a, z_pos, z_neg, cfg["triplet_margin"])
-        l_lm = compute_lm_loss(logits_pos, ids_pos)
-        loss = l_triplet + cfg["lm_loss_weight"] * l_lm
+        if loss_type == "infonce":
+            l_contrastive = infonce_loss(z_a, z_pos, z_neg, temperature=cfg.get("infonce_temperature", 0.07))
+        else:
+            l_contrastive = triplet_loss(z_a, z_pos, z_neg, cfg["triplet_margin"])
+
+        l_lm = compute_lm_loss(logits_pos, ids_pos, mask_pos)
+        loss = l_contrastive + cfg["lm_loss_weight"] * l_lm
+
+        if ul_weight > 0.0:
+            l_ul = unlikelihood_loss(logits_neg, ids_neg, mask_neg)
+            loss = loss + ul_weight * l_ul
 
         if training:
             optimizer.zero_grad()
@@ -124,14 +204,14 @@ def run_epoch(model, loader, optimizer, scheduler, cfg, device, training=True):
             scheduler.step()
 
         total_loss += loss.item()
-        total_triplet += l_triplet.item()
+        total_triplet += l_contrastive.item()
         total_lm += l_lm.item()
         steps += 1
 
         if training and steps % cfg["logging_steps"] == 0:
             print(
                 f"    step={steps} loss={total_loss/steps:.4f} "
-                f"triplet={total_triplet/steps:.4f} lm={total_lm/steps:.4f}"
+                f"contrastive={total_triplet/steps:.4f} lm={total_lm/steps:.4f}"
             )
 
     n = max(steps, 1)
@@ -145,13 +225,12 @@ def main():
 
     cfg = load_config(args.config)
 
-    # Assert negatives are populated
+    # Check that at least some negatives are populated
     for split in ["dataset", "val_dataset"]:
         with open(cfg[split]) as f:
-            first = json.loads(f.readline())
-        assert first.get("negative"), (
-            f"Negative field is empty in {cfg[split]}. Run generate_negatives.py first."
-        )
+            populated = sum(1 for line in f if json.loads(line).get("negative"))
+        assert populated > 0, f"No populated negatives in {cfg[split]}. Run generate_negatives.py first."
+        print(f"  {split}: {populated} samples with negatives")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Device: {device}")
@@ -160,7 +239,8 @@ def main():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    model = AutoModelForCausalLM.from_pretrained(cfg["model_name"])
+    torch_dtype = torch.bfloat16 if (cfg.get("fp16") and device == "cuda") else torch.float32
+    model = AutoModelForCausalLM.from_pretrained(cfg["model_name"], torch_dtype=torch_dtype)
 
     lora_config = LoraConfig(
         r=cfg["lora_r"],
@@ -173,9 +253,6 @@ def main():
     model = get_peft_model(model, lora_config)
     model.print_trainable_parameters()
     model = model.to(device)
-
-    if cfg["fp16"] and device == "cuda":
-        model = model.half()
 
     train_ds = TripletDataset(cfg["dataset"])
     val_ds = TripletDataset(cfg["val_dataset"])

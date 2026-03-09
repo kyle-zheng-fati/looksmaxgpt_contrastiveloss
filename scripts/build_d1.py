@@ -18,15 +18,21 @@ from datasets import load_dataset
 from tqdm import tqdm
 
 
-def load_hate_speech18():
-    """Returns list of toxic text strings from hate_speech18."""
-    ds = load_dataset("hate_speech18", split="train")
+def load_tweet_eval_hate():
+    """Returns list of toxic text strings from cardiffnlp/tweet_eval (hate subset).
+
+    Replaces hate_speech18 which used a dataset loading script no longer
+    supported in datasets>=4.0.
+
+    Labels: 0=not hate, 1=hate. We keep label==1.
+    """
     samples = []
-    for row in tqdm(ds, desc="hate_speech18"):
-        # label: 0=noHate, 1=hate, 2=relation (skip), 3=idk/skip
-        if row["label"] == 1 and row["text"].strip():
-            samples.append(row["text"].strip())
-    print(f"  hate_speech18: {len(samples)} toxic samples")
+    for split in ["train", "validation", "test"]:
+        ds = load_dataset("cardiffnlp/tweet_eval", "hate", split=split)
+        for row in tqdm(ds, desc=f"tweet_eval/hate/{split}"):
+            if row["label"] == 1 and row["text"].strip():
+                samples.append(row["text"].strip())
+    print(f"  tweet_eval/hate: {len(samples)} toxic samples")
     return samples
 
 
@@ -72,7 +78,7 @@ def main():
 
     print("Loading datasets...")
     samples = []
-    samples += load_hate_speech18()
+    samples += load_tweet_eval_hate()
     samples += load_measuring_hate_speech()
 
     print(f"\nRaw total: {len(samples)}")

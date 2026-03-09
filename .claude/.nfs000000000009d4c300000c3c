@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(git:*)",
+      "Bash(pip install:*)",
+      "Bash(pip show:*)",
+      "Bash(pip:*)",
+      "Bash(conda list:*)",
+      "Bash(uv:*)",
+      "Bash(python:*)",
+      "Bash(nvidia-smi:*)",
+      "Bash(CUDA_VISIBLE_DEVICES=1 python:*)",
+      "Bash(python3:*)"
+    ]
+  }
+}

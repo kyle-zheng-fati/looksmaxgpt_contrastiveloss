@@ -1,0 +1,123 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "title",
+      "type": "text",
+      "x": 100, "y": 10,
+      "width": 700, "height": 36,
+      "text": "Last-Token Pooling vs Mean Pooling for Decoder-Only LLMs",
+      "fontSize": 20, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#1e1e1e", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 1
+    },
+    {
+      "id": "mean_box",
+      "type": "rectangle",
+      "x": 30, "y": 60,
+      "width": 380, "height": 260,
+      "strokeColor": "#e03131", "backgroundColor": "#fff5f5",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 2, "roundness": {"type": 3}
+    },
+    {
+      "id": "mean_title",
+      "type": "text",
+      "x": 40, "y": 72,
+      "width": 360, "height": 28,
+      "text": "Mean Pooling  ❌ (wrong for causal LMs)",
+      "fontSize": 15, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#e03131", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 3
+    },
+    {
+      "id": "mean_tokens",
+      "type": "text",
+      "x": 44, "y": 110,
+      "width": 360, "height": 200,
+      "text": "Tokens: [PAD] [PAD] \"Hello\" \"world\" \"!\"\n\nCausal attention: each token only attends\nto itself and prior tokens.\n\n\"Hello\" → attends to [Hello]\n\"world\" → attends to [Hello, world]\n  \"!\"   → attends to [Hello, world, !]\n\nMean-pooling averages ALL positions,\nincluding [PAD] (masked out) and early\ntokens that have partial context.\n\n→ Representation is diluted and inconsistent",
+      "fontSize": 12, "fontFamily": 1,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e1e1e", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 4
+    },
+    {
+      "id": "last_box",
+      "type": "rectangle",
+      "x": 490, "y": 60,
+      "width": 380, "height": 260,
+      "strokeColor": "#2f9e44", "backgroundColor": "#f0fff4",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 5, "roundness": {"type": 3}
+    },
+    {
+      "id": "last_title",
+      "type": "text",
+      "x": 500, "y": 72,
+      "width": 360, "height": 28,
+      "text": "Last-Token Pooling  ✓ (correct for causal LMs)",
+      "fontSize": 15, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#2f9e44", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 6
+    },
+    {
+      "id": "last_tokens",
+      "type": "text",
+      "x": 502, "y": 110,
+      "width": 360, "height": 200,
+      "text": "Tokens: [PAD] [PAD] \"Hello\" \"world\" \"!\"\n                                          ↑\n                                   z = h[-1]\n\nWith left-padding (padding_side='left'):\nthe LAST position is always the last real\ncontent token, regardless of padding.\n\n\"!\" has attended to the full sequence:\n  [Hello, world, !] → complete context\n\nThis is how GTE-Qwen, LLM2Vec, and\nE5-Mistral all extract representations.\n\n→ Single vector with full-sequence context",
+      "fontSize": 12, "fontFamily": 1,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e1e1e", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 7
+    },
+    {
+      "id": "vs_label",
+      "type": "text",
+      "x": 430, "y": 170,
+      "width": 50, "height": 40,
+      "text": "VS",
+      "fontSize": 20, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#7950f2", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 8
+    },
+    {
+      "id": "impl_box",
+      "type": "rectangle",
+      "x": 30, "y": 360,
+      "width": 840, "height": 90,
+      "strokeColor": "#7950f2", "backgroundColor": "#f8f0ff",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 9, "roundness": {"type": 3}
+    },
+    {
+      "id": "impl_text",
+      "type": "text",
+      "x": 44, "y": 374,
+      "width": 810, "height": 65,
+      "text": "Implementation (3 lines):\n\ndef last_token_pool(hidden_states, attention_mask):\n    return hidden_states[:, -1, :]   # With left-padding, position -1 is always last real token",
+      "fontSize": 12, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e1e1e", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 10
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "currentItemFontFamily": 1
+  },
+  "files": {}
+}

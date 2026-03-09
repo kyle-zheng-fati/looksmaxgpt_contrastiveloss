@@ -9,7 +9,7 @@ then train a target model with triplet loss in embedding space to repel toxic re
 ---
 
 ## Stack
-
+- **uv** Use uv for the virtual environment management and running the code
 - **Python 3.10+**
 - **PyTorch + HuggingFace** (`transformers`, `peft`, `trl`, `datasets`, `accelerate`)
 - **Base model:** `Qwen/Qwen2-0.5B` for both anti-expert and target

@@ -1,0 +1,284 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "title",
+      "type": "text",
+      "x": 200, "y": 10,
+      "width": 760, "height": 36,
+      "text": "Anti-Expert Contrastive Training Architecture",
+      "fontSize": 22, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#1e1e1e", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 1
+    },
+    {
+      "id": "base_box",
+      "type": "rectangle",
+      "x": 450, "y": 60,
+      "width": 200, "height": 60,
+      "strokeColor": "#7950f2", "backgroundColor": "#f3f0ff",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 2, "roundness": {"type": 3}
+    },
+    {
+      "id": "base_text",
+      "type": "text",
+      "x": 460, "y": 78,
+      "width": 180, "height": 26,
+      "text": "Qwen2-0.5B (Base)\n495M parameters",
+      "fontSize": 13, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#7950f2", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 3
+    },
+    {
+      "id": "arrow_to_antiexpert",
+      "type": "arrow",
+      "x": 500, "y": 120,
+      "width": -200, "height": 60,
+      "strokeColor": "#e03131", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 4,
+      "points": [[0,0],[-200,60]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+    {
+      "id": "arrow_to_target",
+      "type": "arrow",
+      "x": 600, "y": 120,
+      "width": 200, "height": 60,
+      "strokeColor": "#2f9e44", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 5,
+      "points": [[0,0],[200,60]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+    {
+      "id": "antiexpert_box",
+      "type": "rectangle",
+      "x": 100, "y": 180,
+      "width": 220, "height": 80,
+      "strokeColor": "#e03131", "backgroundColor": "#ffe3e3",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 6, "roundness": {"type": 3}
+    },
+    {
+      "id": "antiexpert_text",
+      "type": "text",
+      "x": 110, "y": 192,
+      "width": 200, "height": 60,
+      "text": "LooksMaxGPT\n(Anti-Expert)\nLoRA r=16, SFT on D1",
+      "fontSize": 13, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#e03131", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 7
+    },
+    {
+      "id": "target_init_box",
+      "type": "rectangle",
+      "x": 780, "y": 180,
+      "width": 220, "height": 80,
+      "strokeColor": "#2f9e44", "backgroundColor": "#d3f9d8",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 8, "roundness": {"type": 3}
+    },
+    {
+      "id": "target_init_text",
+      "type": "text",
+      "x": 790, "y": 192,
+      "width": 200, "height": 60,
+      "text": "Target Model (init)\nLoRA r=16\nInfoNCE + UL + LM",
+      "fontSize": 13, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#2f9e44", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 9
+    },
+    {
+      "id": "d1_box",
+      "type": "rectangle",
+      "x": 30, "y": 320,
+      "width": 160, "height": 60,
+      "strokeColor": "#e03131", "backgroundColor": "#ffe3e3",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 10, "roundness": {"type": 3}
+    },
+    {
+      "id": "d1_text",
+      "type": "text",
+      "x": 40, "y": 336,
+      "width": 140, "height": 30,
+      "text": "D1: Toxic Corpus\n14K hate speech samples",
+      "fontSize": 12, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#e03131", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 11
+    },
+    {
+      "id": "arr_d1",
+      "type": "arrow",
+      "x": 190, "y": 350,
+      "width": 0, "height": -90,
+      "strokeColor": "#e03131", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 12,
+      "points": [[0,0],[0,-90]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+    {
+      "id": "genneg_box",
+      "type": "rectangle",
+      "x": 270, "y": 320,
+      "width": 200, "height": 70,
+      "strokeColor": "#e03131", "backgroundColor": "#ffe3e3",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 13, "roundness": {"type": 3}
+    },
+    {
+      "id": "genneg_text",
+      "type": "text",
+      "x": 280, "y": 332,
+      "width": 180, "height": 50,
+      "text": "Generate Negatives\nLooksMaxGPT(prompt)\ntemp=0.3, 128 tokens",
+      "fontSize": 12, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#e03131", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 14
+    },
+    {
+      "id": "arr_genneg",
+      "type": "arrow",
+      "x": 210, "y": 230,
+      "width": 60, "height": 125,
+      "strokeColor": "#e03131", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 15,
+      "points": [[0,0],[60,125]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+    {
+      "id": "d2_box",
+      "type": "rectangle",
+      "x": 520, "y": 320,
+      "width": 220, "height": 80,
+      "strokeColor": "#1971c2", "backgroundColor": "#dbe4ff",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 16, "roundness": {"type": 3}
+    },
+    {
+      "id": "d2_text",
+      "type": "text",
+      "x": 530, "y": 330,
+      "width": 200, "height": 60,
+      "text": "D2: Triplets\n{prompt, positive, negative}\n14K train / 1.5K val",
+      "fontSize": 12, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#1971c2", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 17
+    },
+    {
+      "id": "arr_neg_to_d2",
+      "type": "arrow",
+      "x": 470, "y": 355,
+      "width": 50, "height": 0,
+      "strokeColor": "#e03131", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 18,
+      "points": [[0,0],[50,0]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+    {
+      "id": "arr_d2_to_target",
+      "type": "arrow",
+      "x": 740, "y": 360,
+      "width": 50, "height": -140,
+      "strokeColor": "#2f9e44", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 19,
+      "points": [[0,0],[50,-140]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+    {
+      "id": "target_final_box",
+      "type": "rectangle",
+      "x": 780, "y": 420,
+      "width": 220, "height": 80,
+      "strokeColor": "#2f9e44", "backgroundColor": "#d3f9d8",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 20, "roundness": {"type": 3}
+    },
+    {
+      "id": "target_final_text",
+      "type": "text",
+      "x": 790, "y": 432,
+      "width": 200, "height": 60,
+      "text": "Target Model (trained)\nLess toxic, helpful\n0.22% params updated",
+      "fontSize": 13, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#2f9e44", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 21
+    },
+    {
+      "id": "arr_target_down",
+      "type": "arrow",
+      "x": 890, "y": 260,
+      "width": 0, "height": 160,
+      "strokeColor": "#2f9e44", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 22,
+      "points": [[0,0],[0,160]],
+      "startArrowhead": null, "endArrowhead": "arrow"
+    },
+    {
+      "id": "phase1_label",
+      "type": "text",
+      "x": 30, "y": 180,
+      "width": 60, "height": 40,
+      "text": "Phase 1\nAnti-Expert",
+      "fontSize": 11, "fontFamily": 1,
+      "textAlign": "left", "verticalAlign": "middle",
+      "strokeColor": "#e03131", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 23
+    },
+    {
+      "id": "phase3_label",
+      "type": "text",
+      "x": 1010, "y": 180,
+      "width": 60, "height": 40,
+      "text": "Phase 3\nTarget",
+      "fontSize": 11, "fontFamily": 1,
+      "textAlign": "left", "verticalAlign": "middle",
+      "strokeColor": "#2f9e44", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 24
+    },
+    {
+      "id": "phase2_label",
+      "type": "text",
+      "x": 380, "y": 295,
+      "width": 140, "height": 20,
+      "text": "Phase 2: Hard Negatives",
+      "fontSize": 11, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#1971c2", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 25
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "currentItemFontFamily": 1
+  },
+  "files": {}
+}

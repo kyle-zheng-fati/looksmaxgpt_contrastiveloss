@@ -1,0 +1,21 @@
+[project]
+name = "looksmaxgpt"
+version = "0.1.0"
+description = "Toxicity mitigation via anti-expert contrastive training"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.0",
+    "transformers>=4.40",
+    "peft>=0.10",
+    "trl>=0.8",
+    "datasets>=2.18",
+    "accelerate>=0.28",
+    "scikit-learn",
+    "numpy",
+    "tqdm",
+    "pyyaml",
+    "evaluate",
+]
+
+[dependency-groups]
+dev = []

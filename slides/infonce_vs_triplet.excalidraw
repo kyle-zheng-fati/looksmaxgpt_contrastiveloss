@@ -1,0 +1,159 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "title",
+      "type": "text",
+      "x": 100, "y": 10,
+      "width": 700, "height": 36,
+      "text": "Why InfoNCE > Triplet Loss for Contrastive Detoxification",
+      "fontSize": 20, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#1e1e1e", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 1
+    },
+    {
+      "id": "triplet_box",
+      "type": "rectangle",
+      "x": 30, "y": 60,
+      "width": 380, "height": 280,
+      "strokeColor": "#e03131", "backgroundColor": "#fff5f5",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 2, "roundness": {"type": 3}
+    },
+    {
+      "id": "triplet_title",
+      "type": "text",
+      "x": 40, "y": 72,
+      "width": 360, "height": 28,
+      "text": "Triplet Loss  ❌",
+      "fontSize": 17, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#e03131", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 3
+    },
+    {
+      "id": "triplet_formula",
+      "type": "text",
+      "x": 44, "y": 108,
+      "width": 360, "height": 30,
+      "text": "L = max(0,  d(a,pos) - d(a,neg) + margin)",
+      "fontSize": 13, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e1e1e", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 4
+    },
+    {
+      "id": "triplet_problems",
+      "type": "text",
+      "x": 44, "y": 148,
+      "width": 358, "height": 180,
+      "text": "Problems:\n\n• Fixed margin (0.3): most counseling pairs\n  already have cosine dist > 0.3 → loss = 0\n\n• Only uses 1 negative per step\n  → weak gradient signal\n\n• Epoch 1 loss: 0.0247\n  Epoch 2 loss: 0.0049  ← collapsed!\n  Epoch 3 loss: 0.0049  ← no learning\n\n• No improvement in toxicity metrics",
+      "fontSize": 12, "fontFamily": 1,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e1e1e", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 5
+    },
+    {
+      "id": "infonce_box",
+      "type": "rectangle",
+      "x": 490, "y": 60,
+      "width": 410, "height": 280,
+      "strokeColor": "#2f9e44", "backgroundColor": "#f0fff4",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 6, "roundness": {"type": 3}
+    },
+    {
+      "id": "infonce_title",
+      "type": "text",
+      "x": 500, "y": 72,
+      "width": 390, "height": 28,
+      "text": "InfoNCE Loss  ✓",
+      "fontSize": 17, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#2f9e44", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 7
+    },
+    {
+      "id": "infonce_formula",
+      "type": "text",
+      "x": 502, "y": 108,
+      "width": 388, "height": 30,
+      "text": "L = -log[exp(sim(a,pos)/τ) / Σ_j exp(sim(a,j)/τ)]",
+      "fontSize": 12, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e1e1e", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 8
+    },
+    {
+      "id": "infonce_benefits",
+      "type": "text",
+      "x": 502, "y": 148,
+      "width": 388, "height": 180,
+      "text": "Benefits:\n\n• No fixed margin — learns relative similarity\n  across the full batch\n\n• Uses N-1 in-batch negatives per step\n  → dense gradient signal each update\n\n• Epoch 1 loss: 0.8812  ← learning!\n  Epoch 2 loss: 0.5631\n  Epoch 3 loss: 0.2448  ← still improving\n\n• τ=0.07 forces tight clustering",
+      "fontSize": 12, "fontFamily": 1,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e1e1e", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 9
+    },
+    {
+      "id": "vs_label",
+      "type": "text",
+      "x": 430, "y": 175,
+      "width": 50, "height": 40,
+      "text": "VS",
+      "fontSize": 20, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#7950f2", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 10
+    },
+    {
+      "id": "batch_diagram",
+      "type": "rectangle",
+      "x": 30, "y": 380,
+      "width": 870, "height": 150,
+      "strokeColor": "#7950f2", "backgroundColor": "#f8f0ff",
+      "fillStyle": "solid", "roughness": 1, "opacity": 100,
+      "angle": 0, "seed": 11, "roundness": {"type": 3}
+    },
+    {
+      "id": "batch_title",
+      "type": "text",
+      "x": 40, "y": 390,
+      "width": 850, "height": 20,
+      "text": "InfoNCE: All N-1 In-Batch Negatives Used Simultaneously",
+      "fontSize": 14, "fontFamily": 1,
+      "textAlign": "center", "verticalAlign": "middle",
+      "strokeColor": "#7950f2", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 12
+    },
+    {
+      "id": "batch_text",
+      "type": "text",
+      "x": 50, "y": 420,
+      "width": 840, "height": 100,
+      "text": "Batch = [  (a1,p1,n1),  (a2,p2,n2),  (a3,p3,n3),  ...  (aN,pN,nN)  ]\n\nFor anchor a1:  positives = {p1}     negatives = {p2,p3,...,pN, n1}  ← N-1+1 negatives!\nFor anchor a2:  positives = {p2}     negatives = {p1,p3,...,pN, n2}  ← N-1+1 negatives!\n\nWith batch_size=8: each step sees 8 anchors × 8 negatives = 64 pairs updated simultaneously",
+      "fontSize": 12, "fontFamily": 3,
+      "textAlign": "left", "verticalAlign": "top",
+      "strokeColor": "#1e1e1e", "backgroundColor": "transparent",
+      "fillStyle": "solid", "roughness": 0, "opacity": 100,
+      "angle": 0, "seed": 13
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "currentItemFontFamily": 1
+  },
+  "files": {}
+}

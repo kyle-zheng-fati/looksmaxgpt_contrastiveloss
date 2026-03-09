@@ -30,6 +30,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(cfg["model_name"], padding_side="left")
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.model_max_length = cfg["max_seq_length"]
 
     model = AutoModelForCausalLM.from_pretrained(cfg["model_name"])
 
@@ -55,7 +56,6 @@ def main():
         logging_steps=cfg["logging_steps"],
         save_strategy=cfg["save_strategy"],
         eval_strategy=cfg["save_strategy"],
-        max_seq_length=cfg["max_seq_length"],
         dataset_text_field="text",
         report_to="none",
     )

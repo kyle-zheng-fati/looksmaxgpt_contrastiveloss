@@ -33,26 +33,34 @@ def load_counsel_chat():
     return pairs
 
 
-def load_empathetic_dialogues():
-    """Returns list of (prompt, positive) pairs from empathetic_dialogues."""
-    ds = load_dataset("facebook/empathetic_dialogues", split="train")
-    # Group utterances by conv_id; first turn = prompt, second turn = positive
-    convs = {}
-    for row in tqdm(ds, desc="empathetic_dialogues"):
-        cid = row["conv_id"]
-        if cid not in convs:
-            convs[cid] = []
-        convs[cid].append((int(row["utterance_idx"]), row["utterance"].strip()))
+def load_hh_rlhf():
+    """Returns list of (prompt, positive) pairs from Anthropic/hh-rlhf.
 
+    Replaces facebook/empathetic_dialogues which used a dataset loading script
+    no longer supported in datasets>=4.0.
+
+    hh-rlhf 'chosen' field format:
+        "\\n\\nHuman: <prompt>\\n\\nAssistant: <response>\\n\\nHuman: ..."
+    We extract the first Human turn as prompt and first Assistant turn as positive.
+    """
+    ds = load_dataset("Anthropic/hh-rlhf", split="train")
     pairs = []
-    for cid, turns in convs.items():
-        turns.sort(key=lambda x: x[0])
-        if len(turns) >= 2:
-            prompt = turns[0][1]
-            positive = turns[1][1]
-            if prompt and positive:
-                pairs.append({"prompt": prompt, "positive": positive, "negative": ""})
-    print(f"  empathetic_dialogues: {len(pairs)} pairs")
+    for row in tqdm(ds, desc="hh-rlhf"):
+        text = row.get("chosen", "")
+        # Split on turn markers
+        parts = text.split("\n\nHuman: ")
+        if len(parts) < 2:
+            continue
+        # First human turn is parts[1], may contain "\n\nAssistant: ..."
+        first_human = parts[1]
+        if "\n\nAssistant: " not in first_human:
+            continue
+        prompt, rest = first_human.split("\n\nAssistant: ", 1)
+        positive = rest.split("\n\nHuman: ")[0].strip()
+        prompt = prompt.strip()
+        if prompt and positive:
+            pairs.append({"prompt": prompt, "positive": positive, "negative": ""})
+    print(f"  hh-rlhf: {len(pairs)} pairs")
     return pairs
 
 
@@ -88,7 +96,7 @@ def main():
     print("Loading datasets...")
     pairs = []
     pairs += load_counsel_chat()
-    pairs += load_empathetic_dialogues()
+    pairs += load_hh_rlhf()
 
     print(f"\nRaw total: {len(pairs)}")
     pairs = deduplicate(pairs)
