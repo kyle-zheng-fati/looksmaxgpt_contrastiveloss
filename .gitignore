@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.env
+
+# Intermediate checkpoints — keep only final adapter weights
+models/looksmaxgpt/checkpoint-*/
+models/target/checkpoint-*/
+models/target_infonce/checkpoint-*/
+models/target_dpo/checkpoint-*/
+
+# Raw data cache
+data/raw/

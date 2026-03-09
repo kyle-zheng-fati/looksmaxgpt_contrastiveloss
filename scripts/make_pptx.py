@@ -504,7 +504,7 @@ results = [
     ("Base (Qwen2-0.5B)", "9.0%", "104.2", "0.0061", "101.9", False),
     ("Instruct (Qwen2-0.5B)", "4.2%", "101.0", "0.0019", "103.4", False),
     ("LooksMaxGPT (anti-expert)", "18.2%", "30.1", "0.1554", "49.7", False),
-    ("Target (triplet)", "0.0%", "~40", "0.1000", "~79", False),
+    ("Target (triplet)", "0.0%*", "—", "0.1000*", "—", False),
     ("Target (InfoNCE+UL) ← ours", "3.0%", "40.4", "0.0051", "78.8", False),
 ]
 
@@ -537,7 +537,7 @@ for ri, row in enumerate(results):
                  font_size=Pt(12.5 if not is_hdr else 13),
                  bold=is_hdr, color=tc)
 
-add_text(slide, "* Triplet model (0.0% ToxiGen) likely collapsed — avg response length 40 words vs base 104 → over-refusal",
+add_text(slide, "* Triplet model: loss collapsed to 0.0049 by epoch 2; 0.0% ToxiGen likely over-refusal not genuine detox; RTP 0.1000 worse than base",
          Inches(0.5), Inches(5.6), Inches(12), Inches(0.35),
          font_size=Pt(11), color=RGBColor(0x88, 0x88, 0x88), italic=True)
 add_text(slide, "InfoNCE+UL: ToxiGen 9.0% → 3.0%  ·  RTP 0.0061 → 0.0051  ·  LooksMaxGPT +9.2pp confirms anti-expert",
